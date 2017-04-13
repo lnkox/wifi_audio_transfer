@@ -4,11 +4,18 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <WiFiUdp.h>
-const int udp_port = 2214;
+const int udp_out = 2214;
 const int udp_in = 2211;
 WiFiUDP udp;
 
 
+void spiBegin(void)
+{
+  SPI.begin();
+  SPI.setDataMode(SPI_MODE0);
+  SPI.setBitOrder(MSBFIRST);
+  SPI.setClockDivider(SPI_CLOCK_DIV2);
+}
 
 
 void sta_mode(void)
