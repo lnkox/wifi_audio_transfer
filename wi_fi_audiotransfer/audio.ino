@@ -2,20 +2,26 @@
 
 int  val = 0;
 uint16_t adc_buf[2][buf_size]; // ADC data buffer, double buffered
-uint8_t dac_buf[2][buf_dac_size]; // DAC data buffer, double buffered
+uint8_t dac_buf[DAC_BUF_CNT][buf_dac_size]; // DAC data buffer, double buffered
 uint16_t filtered[buf_size];
 char current_adc_buf = 0;
 char current_dac_buf = 0;
+char play_dac_buf = 0;
+boolean play_en = false;
 int adc_buf_pos = 0;
 int dac_buf_pos = 0;
 int send_samples_now;
-boolean buf_live[2];
+char buf_cnt = 0;
+boolean buf_live[DAC_BUF_CNT];
 
 float FK = 0.15;
 int acc_xf;
 void sample_isr(void)
 {
-    uint16_t dac_val = (dac_buf[current_dac_buf][dac_buf_pos + 1] << 8) + dac_buf[current_dac_buf][dac_buf_pos ];
+  uint16_t dac_val=0;
+  if (play_en == true)
+  {
+   dac_val = (dac_buf[play_dac_buf][dac_buf_pos + 1] << 8) + dac_buf[play_dac_buf][dac_buf_pos ];
     if (dac_buf_pos < buf_dac_size)
     {
       dac_buf_pos = dac_buf_pos + 2;
@@ -23,17 +29,23 @@ void sample_isr(void)
     else
     {
       buf_live[current_dac_buf] = false;
-      if (buf_live[!current_dac_buf] == true)
+
+      if (buf_cnt > 0)
       {
-        current_dac_buf = !current_dac_buf;
+        buf_cnt--;
+        play_dac_buf++;
+        if (play_dac_buf == DAC_BUF_CNT)
+        {
+          play_dac_buf = 0;
+        }
         dac_buf_pos = 0;
       }
       else
       {
-        dac_val = 0;
+        play_en = false;
       }
     }
- // uint16_t dac_val = 0;
+  }
   digitalWrite(D8, LOW);
   val = SPI.transfer16(dac_val | 0x3000) & 0x0fff;
   digitalWrite(D8, HIGH);
@@ -52,15 +64,25 @@ void proces_audio(void)
 {
   if (send_samples_now) {
     send_samples_now = 0;
+    //Filtering();
     send_audio_packet();
   }
 
   int packetSize = udp.parsePacket();
   if (packetSize)
   {
-    int len = udp.read(dac_buf[!current_dac_buf], packetSize);
-    if (buf_live[0]==false && buf_live[1]==false) delay(14);
-    buf_live[!current_dac_buf] = true;
+    current_dac_buf++;
+    if (current_dac_buf == DAC_BUF_CNT)
+    {
+      current_dac_buf = 0;
+    }
+    int len = udp.read(dac_buf[current_dac_buf], packetSize);
+    buf_live[current_dac_buf] = true;
+    buf_cnt++;
+    if (buf_cnt > 2)
+    {
+      play_en = true;
+    }
   }
 }
 void send_audio_packet(void)
