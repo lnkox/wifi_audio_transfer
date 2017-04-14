@@ -8,8 +8,8 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <WiFiUdp.h>
-const int udp_out = 2211;
-const int udp_in = 2214;
+const int udp_out = 2214;
+const int udp_in = 2211;
 WiFiUDP udp;
 
 
@@ -21,29 +21,22 @@ void spiBegin(void)
   SPI.setClockDivider(SPI_CLOCK_DIV2);
 }
 
-
-void sta_mode(void)
+void setup_to_ap() // Налаштування пристрою в режим  "Точки доступу"
 {
-  Serial.println("I was built on " __DATE__ " at " __TIME__ "");
-  WiFi.mode(WIFI_STA);
-  WiFi.begin("audioap","audioap1");
-  Serial.print("Connecting to wifi");
-  while ( WiFi.status() != WL_CONNECTED ) {
-    delay ( 500 );
-    Serial.print ( "." );
-  }
 
-  Serial.println ( "" );
-  Serial.print ( "Conected to " );
-  Serial.println ( "audioap" );
-  Serial.print ( "IP " );
-  Serial.println ( WiFi.localIP() );
+
+  WiFi.mode(WIFI_AP);
+  WiFi.softAP("audioap","audioap1");
+  Serial.println("audioap   audioap1");
+  IPAddress myIP = WiFi.softAPIP();
+  Serial.println("AP created");
+  Serial.println(myIP);
 }
 void setup(void)
 {
   Serial.begin(115200);
   pinMode(D8, OUTPUT);
-  sta_mode();
+  setup_to_ap();
 
   udp.begin(udp_in);
   spiBegin();
