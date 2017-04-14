@@ -34,8 +34,8 @@ Begin VB.Form Form1
       _Version        =   393216
       Protocol        =   1
       RemoteHost      =   "255.255.255.255"
-      RemotePort      =   2214
-      LocalPort       =   2211
+      RemotePort      =   2211
+      LocalPort       =   2214
    End
 End
 Attribute VB_Name = "Form1"
@@ -60,9 +60,9 @@ End Sub
 Private Sub Winsock1_DataArrival(ByVal bytesTotal As Long)
 Dim data As String
 Winsock1.GetData data
-
+Me.Caption = nbyte
 Winsock1.SendData data
- Me.Caption = nbyte
+ 
 
 'Put #1, nbyte, data
 nbyte = nbyte + bytesTotal
