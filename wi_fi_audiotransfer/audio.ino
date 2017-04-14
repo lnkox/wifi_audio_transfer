@@ -11,25 +11,23 @@ boolean play_en = false;
 int adc_buf_pos = 0;
 int dac_buf_pos = 0;
 int send_samples_now;
-char buf_cnt = 0;
+int buf_cnt = 0;
 boolean buf_live[DAC_BUF_CNT];
 
 float FK = 0.15;
 int acc_xf;
 void sample_isr(void)
 {
-  uint16_t dac_val=0;
+  uint16_t dac_val = 0;
   if (play_en == true)
   {
-   dac_val = (dac_buf[play_dac_buf][dac_buf_pos + 1] << 8) + dac_buf[play_dac_buf][dac_buf_pos ];
+    dac_val = (dac_buf[play_dac_buf][dac_buf_pos + 1] << 8) + dac_buf[play_dac_buf][dac_buf_pos ];
     if (dac_buf_pos < buf_dac_size)
     {
       dac_buf_pos = dac_buf_pos + 2;
     }
     else
     {
-      buf_live[current_dac_buf] = false;
-
       if (buf_cnt > 0)
       {
         buf_cnt--;
@@ -43,6 +41,8 @@ void sample_isr(void)
       else
       {
         play_en = false;
+        dac_val = 0;
+        Serial.println("empy buffer");
       }
     }
   }
@@ -71,18 +71,18 @@ void proces_audio(void)
   int packetSize = udp.parsePacket();
   if (packetSize)
   {
+    int len = udp.read(dac_buf[current_dac_buf], packetSize);
     current_dac_buf++;
     if (current_dac_buf == DAC_BUF_CNT)
     {
       current_dac_buf = 0;
     }
-    int len = udp.read(dac_buf[current_dac_buf], packetSize);
-    buf_live[current_dac_buf] = true;
     buf_cnt++;
-    if (buf_cnt > 2)
+    if (buf_cnt == DAC_BUF_CNT - 1)
     {
       play_en = true;
     }
+
   }
 }
 void send_audio_packet(void)

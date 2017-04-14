@@ -1,16 +1,16 @@
-#define buf_size  500
-#define buf_dac_size  1000
-#define sample_Rate 12000 
-#define timer_period 80
-#define DAC_BUF_CNT 5
+#define buf_size  300
+#define buf_dac_size  600
+#define sample_Rate 16000 
+#define timer_period 60
+#define DAC_BUF_CNT 20
 
 
 #include <SPI.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <WiFiUdp.h>
-const int udp_out = 2211;
-const int udp_in = 2214;
+const int udp_out = 2241;
+const int udp_in = 2211;
 WiFiUDP udp;
 
 
@@ -27,7 +27,7 @@ void sta_mode(void)
 {
   Serial.println("I was built on " __DATE__ " at " __TIME__ "");
   WiFi.mode(WIFI_STA);
-  WiFi.begin("audioap","audioap1");
+  WiFi.begin("Bubuka","22011993");
   Serial.print("Connecting to wifi");
   while ( WiFi.status() != WL_CONNECTED ) {
     delay ( 500 );
@@ -36,7 +36,7 @@ void sta_mode(void)
 
   Serial.println ( "" );
   Serial.print ( "Conected to " );
-  Serial.println ( "audioap" );
+  Serial.println ( "Bubuka" );
   Serial.print ( "IP " );
   Serial.println ( WiFi.localIP() );
 }
