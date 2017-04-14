@@ -1,17 +1,17 @@
 #define buf_size  700
 #define buf_dac_size  1400
-#define sample_Rate 12000
+#define sample_Rate 12000 
 #define timer_period 80
 
 
 #include <SPI.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
+#include <WiFiUdp.h>
+const int udp_out = 2214;
+const int udp_in = 2211;
+WiFiUDP udp;
 
-
-
-WiFiServer server(80);
-WiFiClient serverClient;
 
 void spiBegin(void)
 {
@@ -26,7 +26,7 @@ void setup_to_ap() // Налаштування пристрою в режим  "
 
 
   WiFi.mode(WIFI_AP);
-  WiFi.softAP("audioap", "audioap1");
+  WiFi.softAP("audioap","audioap1");
   Serial.println("audioap   audioap1");
   IPAddress myIP = WiFi.softAPIP();
   Serial.println("AP created");
@@ -38,37 +38,23 @@ void setup(void)
   pinMode(D8, OUTPUT);
   setup_to_ap();
 
-
+  udp.begin(udp_in);
   spiBegin();
-  server.begin();
-  server.setNoDelay(true);
-  delay(1000);
-  Serial.println(timer_period);
+
+ Serial.println(timer_period);
   timer1_isr_init();
   timer1_attachInterrupt(sample_isr);
   timer1_enable(TIM_DIV16, TIM_EDGE, TIM_LOOP);
-  timer1_write(clockCyclesPerMicrosecond() / 16 * timer_period); //80us = 12.5kHz sampling freq
+  timer1_write(clockCyclesPerMicrosecond() / 16 *timer_period); //80us = 12.5kHz sampling freq
 
   Serial.println("setup done");
-
-
+ 
+  
 }
 
 void loop()
 {
-  if (server.hasClient())
-  {
-    if (!serverClient || !serverClient.connected())
-    {
-      if (serverClient) serverClient.stop();
-      serverClient = server.available();
-      Serial.println("New client");
-    }
-    WiFiClient serverCl = server.available();
-    serverCl.stop();
-  }
-
-
-
-
+  proces_audio();
+  
+ 
 }

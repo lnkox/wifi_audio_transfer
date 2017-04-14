@@ -7,8 +7,11 @@
 #include <SPI.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
+#include <WiFiUdp.h>
+const int udp_out = 2211;
+const int udp_in = 2214;
+WiFiUDP udp;
 
-WiFiClient serverClient;
 
 void spiBegin(void)
 {
@@ -42,18 +45,9 @@ void setup(void)
   pinMode(D8, OUTPUT);
   sta_mode();
 
-
+  udp.begin(udp_in);
   spiBegin();
-    Serial.print("connecting to ");
-  Serial.println("192.168.4.1");
-  
-  // Use WiFiClient class to create TCP connections
-  const int httpPort = 80;
-  if (!serverClient.connect("192.168.4.1", httpPort)) {
-    Serial.println("connection failed");
-    return;
-  }
-delay(1000);
+
  Serial.println(timer_period);
   timer1_isr_init();
   timer1_attachInterrupt(sample_isr);
