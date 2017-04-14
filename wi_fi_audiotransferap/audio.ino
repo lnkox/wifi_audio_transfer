@@ -15,32 +15,31 @@ float FK = 0.15;
 int acc_xf;
 void sample_isr(void)
 {
-    uint16_t dac_val = (dac_buf[current_dac_buf][dac_buf_pos + 1] << 8) + dac_buf[current_dac_buf][dac_buf_pos ];
-    if (dac_buf_pos < buf_dac_size)
+  uint16_t dac_val = (dac_buf[current_dac_buf][dac_buf_pos + 1] << 8) + dac_buf[current_dac_buf][dac_buf_pos ];
+  if (dac_buf_pos < buf_dac_size)
+  {
+    dac_buf_pos = dac_buf_pos + 2;
+  }
+  else
+  {
+    buf_live[current_dac_buf] = false;
+    if (buf_live[!current_dac_buf] == true)
     {
-      dac_buf_pos = dac_buf_pos + 2;
+      current_dac_buf = !current_dac_buf;
+      dac_buf_pos = 0;
     }
     else
     {
-      buf_live[current_dac_buf] = false;
-      if (buf_live[!current_dac_buf] == true)
-      {
-        current_dac_buf = !current_dac_buf;
-        dac_buf_pos = 0;
-      }
-      else
-      {
-        dac_val = 0;
-      }
+      dac_val = 0;
     }
- // uint16_t dac_val = 0;
+  }
   digitalWrite(D8, LOW);
   val = SPI.transfer16(dac_val | 0x3000) & 0x0fff;
   digitalWrite(D8, HIGH);
-
-
-  acc_xf = (1 - FK) * acc_xf + FK * val;
-  adc_buf[current_adc_buf][adc_buf_pos] = acc_xf;
+  
+  
+  acc_xf = (1-FK)*acc_xf + FK*val;
+  adc_buf[current_adc_buf][adc_buf_pos] =acc_xf;
   adc_buf_pos++;
   if (adc_buf_pos > buf_size) {
     adc_buf_pos = 0;
@@ -52,6 +51,7 @@ void proces_audio(void)
 {
   if (send_samples_now) {
     send_samples_now = 0;
+    //Filtering();
     send_audio_packet();
   }
 
