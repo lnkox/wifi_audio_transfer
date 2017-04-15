@@ -51,8 +51,8 @@ void sample_isr(void)
   digitalWrite(D8, HIGH);
 
 
-  acc_xf = (1 - FK) * acc_xf + FK * val;
-  adc_buf[current_adc_buf][adc_buf_pos] = acc_xf;
+  //acc_xf = (1 - FK) * acc_xf + FK * val;
+  adc_buf[current_adc_buf][adc_buf_pos] = val;
   adc_buf_pos++;
   if (adc_buf_pos > buf_size) {
     adc_buf_pos = 0;
