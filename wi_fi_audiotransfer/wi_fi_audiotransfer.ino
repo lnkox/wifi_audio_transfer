@@ -2,7 +2,7 @@
 #define buf_dac_size  600
 #define sample_Rate 16000 
 #define timer_period 60
-#define DAC_BUF_CNT 20
+#define DAC_BUF_CNT 30
 
 
 #include <SPI.h>
@@ -11,6 +11,7 @@
 #include <WiFiUdp.h>
 const int udp_out = 2211;
 const int udp_in = 2211;
+
 WiFiUDP udp;
 
 
@@ -62,7 +63,8 @@ void setup(void)
 
 void loop()
 {
-  proces_audio();
   
- 
+proces_audio(); 
+
+
 }
