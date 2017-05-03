@@ -1,17 +1,15 @@
-#define buf_size  300
-#define buf_dac_size  600
-#define sample_Rate 16000 
-#define timer_period 60
-#define DAC_BUF_CNT 30
-
+#define buf_size  500
+#define buf_dac_size  1000
+#define sample_Rate 12000 
+#define timer_period 80
+#define DAC_BUF_CNT 5
 
 #include <SPI.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <WiFiUdp.h>
-const int udp_out = 2211;
+const int udp_out = 2214;
 const int udp_in = 2211;
-
 WiFiUDP udp;
 
 
@@ -23,29 +21,22 @@ void spiBegin(void)
   SPI.setClockDivider(SPI_CLOCK_DIV2);
 }
 
-
-void sta_mode(void)
+void setup_to_ap() // Налаштування пристрою в режим  "Точки доступу"
 {
-  Serial.println("I was built on " __DATE__ " at " __TIME__ "");
-  WiFi.mode(WIFI_STA);
-  WiFi.begin("Bubuka","22011993");
-  Serial.print("Connecting to wifi");
-  while ( WiFi.status() != WL_CONNECTED ) {
-    delay ( 500 );
-    Serial.print ( "." );
-  }
 
-  Serial.println ( "" );
-  Serial.print ( "Conected to " );
-  Serial.println ( "Bubuka" );
-  Serial.print ( "IP " );
-  Serial.println ( WiFi.localIP() );
+
+  WiFi.mode(WIFI_AP);
+  WiFi.softAP("audioap","audioap1");
+  Serial.println("audioap   audioap1");
+  IPAddress myIP = WiFi.softAPIP();
+  Serial.println("AP created");
+  Serial.println(myIP);
 }
 void setup(void)
 {
   Serial.begin(115200);
   pinMode(D8, OUTPUT);
-  sta_mode();
+  setup_to_ap();
 
   udp.begin(udp_in);
   spiBegin();
@@ -63,8 +54,7 @@ void setup(void)
 
 void loop()
 {
+  proces_audio();
   
-proces_audio(); 
-
-
+ 
 }

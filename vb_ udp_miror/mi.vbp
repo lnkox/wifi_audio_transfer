@@ -4,6 +4,7 @@ Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#C:\Windows\system32\st
 Object={248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0; MSWINSCK.OCX
 IconForm="Form1"
 Startup="Form1"
+ExeName32="mi.exe"
 Command32=""
 Name="Project1"
 HelpContextID="0"
