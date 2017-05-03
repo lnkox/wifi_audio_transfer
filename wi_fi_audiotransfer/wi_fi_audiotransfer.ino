@@ -1,8 +1,7 @@
-#define buf_size  300
-#define buf_dac_size  600
+#define buf_size  1000
+#define buf_dac_size  16000
 #define sample_Rate 16000 
 #define timer_period 60
-#define DAC_BUF_CNT 30
 
 
 #include <SPI.h>
