@@ -29,7 +29,7 @@ void sample_isr(void)
   {
     play_buf_pos = 0;
   }
-  
+
   adc_buf[current_adc_buf][adc_buf_pos] = val;
   adc_buf_pos++;
   if (adc_buf_pos > buf_size)
@@ -52,13 +52,12 @@ void proces_audio(void)
     else
     {
       play_delay = play_dl;
-      send_pos=0;
+      send_pos = 0;
     }
 
   }
 
   int packetSize = udp.parsePacket();
-  int maxv=0;
   if (packetSize)
   {
     uint8_t pbuf[4];
@@ -69,10 +68,9 @@ void proces_audio(void)
     if (play_pos > 0) play_buf_pos = play_pos;
     for (int q = 0; q < buf_size; q++)
     {
-      if (maxv<tbuf[q]) maxv=tbuf[q];
       dac_buf[resv_pos++] = tbuf[q];
     }
-    Serial.println ( maxv );
+
   }
 }
 void send_audio_packet(void)
