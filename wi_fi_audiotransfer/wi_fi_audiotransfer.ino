@@ -1,8 +1,9 @@
 #define buf_size  1000
-#define buf_dac_size  16000
+#define buf_dac_size  8000
 #define sample_Rate 16000 
 #define timer_period 60
-
+#define tx_but D2
+#define play_dl 5
 
 #include <SPI.h>
 #include <ESP8266WiFi.h>
@@ -44,6 +45,7 @@ void setup(void)
 {
   Serial.begin(115200);
   pinMode(D8, OUTPUT);
+  pinMode(tx_but, INPUT); 
   sta_mode();
 
   udp.begin(udp_in);
